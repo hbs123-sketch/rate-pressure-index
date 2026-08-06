@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Rate Pressure Index</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell">
+      <section class="lookup-panel" aria-labelledby="page-title">
+        <div>
+          <h1 id="page-title">Could data-center growth be putting pressure on your electric bill?</h1>
+          <p class="lede">
+            Utilities are expanding the grid for large new loads. Enter your ZIP to see the public filings and bill changes shaping local rate pressure.
+          </p>
+          <div class="network-motif" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <form id="lookup-form" class="lookup-form">
+          <label for="zip">ZIP code</label>
+          <div class="input-row">
+            <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" placeholder="20147" required>
+            <button type="submit">Check</button>
+          </div>
+          <p id="form-error" class="form-error" role="alert"></p>
+          <p class="trust-line">Every number sourced and linked. Not affiliated with any utility.</p>
+        </form>
+        <div id="pilot-preview" class="pilot-preview" aria-label="Live pilot utility scores"></div>
+      </section>
+
+      <section id="result" class="result-panel" hidden></section>
+      <section id="not-covered" class="result-panel muted-panel" hidden></section>
+    </main>
+
+    <script type="module" src="src/app.js"></script>
+  </body>
+</html>

@@ -1,0 +1,22 @@
+# Local dependency and verification caches
+node_modules/
+data/.cache/
+data/.verify/
+.vercel/
+
+# Local environment files and credential material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+
+# Tool output
+playwright-report/
+test-results/
+
+# OS metadata
+.DS_Store
+Thumbs.db

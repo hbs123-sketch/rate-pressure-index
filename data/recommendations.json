@@ -1,0 +1,68 @@
+{
+  "module_enabled": true,
+  "disclosure": "Independent recommendations. We may earn a referral fee if you use one of these.",
+  "eligibility": {
+    "retail_choice_states": {
+      "Ohio": {
+        "source_label": "PUCO Apples to Apples",
+        "source_url": "https://energychoice.ohio.gov/ApplesToApples.aspx",
+        "verification_terms": [
+          "PUCO produces the Apples to Apples charts",
+          "electric supplier price options",
+          "contract terms"
+        ]
+      }
+    },
+    "community_solar_states": {
+      "Virginia": {
+        "source_label": "Virginia SCC Shared Solar Programs",
+        "source_url": "https://www.scc.virginia.gov/regulated-industries/utility-regulation/energy-regulation/renewable-resources/shared-solar/",
+        "verification_terms": [
+          "Shared Solar Programs",
+          "Dominion Energy Virginia",
+          "purchase solar generated electricity"
+        ]
+      }
+    }
+  },
+  "categories": {
+    "supplier_comparison": {
+      "eligibility": "retail_choice_states",
+      "title": "Compare electricity suppliers",
+      "sentence": "AEP's current residential Price to Compare is $0.1097/kWh for July 1 through September 30, 2026; PUCO currently lists no competing offers on this chart.",
+      "source_label": "PUCO source",
+      "source_url": "https://www.energychoice.ohio.gov/ApplesToApplesComparision.aspx?Category=ElectricThe&RateCode=1&TerritoryId=2",
+      "verification_terms": ["$0.1097/kWh", "July 1, 2026 through September 30, 2026", "No Offers are available"],
+      "button_label": "Compare suppliers",
+      "outbound_url": "https://www.chooseenergy.com/?account_id=YOUR_CHOOSEENERGY_ACCOUNT_ID"
+    },
+    "community_solar": {
+      "eligibility": "community_solar_states",
+      "title": "Explore shared solar",
+      "sentence": "An SCC shared-solar report says the common pay-as-you-go model discounts subscription fees by roughly 10%-20% of bill credits.",
+      "source_label": "Virginia SCC report",
+      "source_url": "https://www.scc.virginia.gov/media/sccvirginiagov-home/regulated-industries/utility-regulation/responsibilities/20221130-ch591-coop-shared-solar-report.pdf",
+      "verification_terms": ["fixed discount rate", "10%-20%", "bill credit"],
+      "button_label": "Explore shared solar",
+      "outbound_url": "https://www.arcadia.com/community-solar?account_id=YOUR_ARCADIA_ACCOUNT_ID"
+    },
+    "rooftop_solar": {
+      "title": "Compare rooftop solar",
+      "sentence": "DOE says heavy roof shade can make rooftop panels unsuitable, so quotes should reflect the actual roof and site conditions.",
+      "source_label": "DOE source",
+      "source_url": "https://www.energy.gov/cmei/systems/homeowners-guide-solar",
+      "verification_terms": ["trees", "excessive shade", "rooftop panels may not be the most ideal"],
+      "button_label": "Compare solar options",
+      "outbound_url": "https://www.energysage.com/solar/marketplace/?account_id=YOUR_ENERGYSAGE_ACCOUNT_ID"
+    },
+    "battery_backup": {
+      "title": "Compare battery backup",
+      "sentence": "DOE says savings depend on household electricity use, system size, and available sunlight; use its guide as a starting point before requesting battery-backed system quotes.",
+      "source_label": "DOE source",
+      "source_url": "https://www.energy.gov/cmei/systems/homeowners-guide-solar",
+      "verification_terms": ["amount of money you can save with solar depends", "how much electricity you consume", "how much sunlight hits it"],
+      "button_label": "Compare battery backup",
+      "outbound_url": "https://www.ecoflow.com/us?account_id=YOUR_ECOFLOW_ACCOUNT_ID"
+    }
+  }
+}

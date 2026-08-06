@@ -1,0 +1,15 @@
+{
+  "name": "rate-pressure-index",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "generate:og": "node scripts/generate-og-cards.mjs",
+    "test": "node tests/scoring.test.js",
+    "test:source": "node tests/source-verification.mjs",
+    "test:browser": "node tests/browser-audit.mjs"
+  },
+  "devDependencies": {
+    "playwright": "^1.62.0"
+  }
+}

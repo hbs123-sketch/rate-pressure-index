@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Methodology | Rate Pressure Index</title>
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <main class="shell prose">
+      <a href="index.html" class="back-link">Back to lookup</a>
+      <h1>Methodology</h1>
+      <p>
+        The Rate Pressure Index is a sourced indicator for whether data-center-related grid buildout is likely adding pressure to electricity rates in a utility territory. It is not a determination that any individual customer's bill changed because of a data center.
+      </p>
+      <h2>Formula</h2>
+      <p>
+        Composite score = grid constraint x 25% + tariff protection x 25% + buildout scale x 20% + rate case x 20% + rate trend x 10%.
+      </p>
+      <ul>
+        <li><strong>Grid constraint:</strong> market or system evidence that supply, capacity, or transmission is tightening.</li>
+        <li><strong>Tariff protection:</strong> whether large-load customers have binding minimum bills, contract terms, collateral, or exit fees.</li>
+        <li><strong>Buildout scale:</strong> the scale of data center or large-load demand in the service territory.</li>
+        <li><strong>Rate case:</strong> recent or pending regulatory actions affecting customer rates.</li>
+        <li><strong>Rate trend:</strong> whether customer-facing rate movement is above or below national/state baseline context.</li>
+      </ul>
+      <h2>Bands</h2>
+      <p>0-30 Low, 31-55 Moderate, 56-75 Elevated, 76-100 High.</p>
+      <h2>Limitations</h2>
+      <p>
+        The inputs are proxies, not ground truth. EIA Form 861 service territory data is county-based, so this v1 uses a conservative pilot ZIP lookup rather than claiming complete ZIP-level coverage. Correlation is not causation, and source quality varies by factor; where judgment is required, the score should be revisited as new filings appear.
+      </p>
+      <h2>National Baseline</h2>
+      <p>
+        The rate-trend comparison uses the EIA Short-Term Energy Outlook July 2026 workbook. National residential price changes are computed from monthly U.S. residential cents-per-kilowatthour values in Table 7a and are shown as context only; they do not change the score.
+      </p>
+      <h2>Usage Estimates</h2>
+      <p>
+        The low, average, and high usage selector scales only a cited average monthly bill impact or customer benefit. It is a rough illustration, not a precise bill forecast and not a claim that a data center caused that amount.
+      </p>
+    </main>
+  </body>
+</html>
