@@ -58,6 +58,6 @@ jobs:
         with:
           node-version: 24
       - run: npm install --global vercel@50.14.1
-      - run: vercel pull --yes --environment=production
-      - run: vercel build --prod
-      - run: vercel deploy --prebuilt --prod
+      - run: vercel pull --yes --environment=production --token "$VERCEL_TOKEN"
+      - run: vercel build --prod --token "$VERCEL_TOKEN"
+      - run: vercel deploy --prebuilt --prod --token "$VERCEL_TOKEN"
