@@ -75,8 +75,10 @@ for (const testCase of cases) {
     `${utility.utility_name} renders causal-framing disclaimer`
   );
   assert.ok(body.toLowerCase().includes("bill impact estimate"), `${utility.utility_name} renders bill impact estimate`);
-  assert.ok(body.includes("selected usage tier"), `${utility.utility_name} explains its usage scaling`);
+  assert.ok(body.includes("Based on the cited rate action for this tier"), `${utility.utility_name} explains its usage scaling`);
   assert.ok(body.includes(utility.usage_scaling.timeframe), `${utility.utility_name} renders bill-impact timeframe`);
+  assert.equal(await page.locator(".hero-impact strong").count(), 1, `${utility.utility_name} promotes the cited household impact`);
+  assert.equal(await page.locator(".score-box .score").count(), 1, `${utility.utility_name} keeps the score visible as secondary context`);
   assert.equal(await page.locator(".evidence-panel[open]").count(), 0, `${utility.utility_name} evidence starts collapsed`);
   assert.ok(body.includes("See the evidence behind this score"), `${utility.utility_name} renders evidence expander`);
   assert.ok(body.includes(utility.whats_changed.text), `${utility.utility_name} renders whats_changed text`);
@@ -191,10 +193,11 @@ for (const testCase of cases) {
 }
 
 await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
-assert.equal(await page.locator(".pilot-card").count(), 3, "landing page renders three pilot previews");
-assert.ok((await page.locator("h1").innerText()).includes("data-center growth"), "landing page leads with the stakes");
+assert.equal(await page.locator(".coverage-line").count(), 1, "landing page renders the pilot-coverage statement");
+assert.ok((await page.locator("h1").innerText()).length < 40, "landing page uses a concise headline");
 assert.equal((await page.locator("body").innerText()).includes("Pilot lookup"), false, "landing page removes pilot lookup label");
-assert.ok((await page.locator("body").innerText()).includes("Every number sourced and linked. Not affiliated with any utility."), "landing page renders trust statement");
+assert.equal((await page.locator("body").innerText()).includes("Every number sourced and linked. Not affiliated with any utility."), false, "landing page removes trust statement from hero");
+assert.equal(await page.locator(".logo-mark").count(), 1, "landing page renders the index logo mark");
 assert.equal(await page.locator(".network-motif span").count(), 5, "landing page renders network visual");
 
 for (const [score, expected] of [

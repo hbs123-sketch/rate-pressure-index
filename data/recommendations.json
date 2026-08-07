@@ -29,7 +29,7 @@
     "supplier_comparison": {
       "eligibility": "retail_choice_states",
       "title": "Compare electricity suppliers",
-      "sentence": "AEP's current residential Price to Compare is $0.1097/kWh for July 1 through September 30, 2026; PUCO currently lists no competing offers on this chart.",
+      "sentence": "AEP's current Price to Compare is $0.1097/kWh; PUCO lists no competing offers.",
       "source_label": "PUCO source",
       "source_url": "https://www.energychoice.ohio.gov/ApplesToApplesComparision.aspx?Category=ElectricThe&RateCode=1&TerritoryId=2",
       "verification_terms": ["$0.1097/kWh", "July 1, 2026 through September 30, 2026", "No Offers are available"],
@@ -39,7 +39,7 @@
     "community_solar": {
       "eligibility": "community_solar_states",
       "title": "Explore shared solar",
-      "sentence": "An SCC shared-solar report says the common pay-as-you-go model discounts subscription fees by roughly 10%-20% of bill credits.",
+      "sentence": "SCC says shared-solar subscriptions commonly discount bill-credit fees by roughly 10%-20%.",
       "source_label": "Virginia SCC report",
       "source_url": "https://www.scc.virginia.gov/media/sccvirginiagov-home/regulated-industries/utility-regulation/responsibilities/20221130-ch591-coop-shared-solar-report.pdf",
       "verification_terms": ["fixed discount rate", "10%-20%", "bill credit"],
@@ -48,7 +48,7 @@
     },
     "rooftop_solar": {
       "title": "Compare rooftop solar",
-      "sentence": "DOE says heavy roof shade can make rooftop panels unsuitable, so quotes should reflect the actual roof and site conditions.",
+      "sentence": "DOE says heavy roof shade can make rooftop solar unsuitable.",
       "source_label": "DOE source",
       "source_url": "https://www.energy.gov/cmei/systems/homeowners-guide-solar",
       "verification_terms": ["trees", "excessive shade", "rooftop panels may not be the most ideal"],
@@ -57,7 +57,7 @@
     },
     "battery_backup": {
       "title": "Compare battery backup",
-      "sentence": "DOE says savings depend on household electricity use, system size, and available sunlight; use its guide as a starting point before requesting battery-backed system quotes.",
+      "sentence": "DOE says savings vary by household use, system size, and sunlight.",
       "source_label": "DOE source",
       "source_url": "https://www.energy.gov/cmei/systems/homeowners-guide-solar",
       "verification_terms": ["amount of money you can save with solar depends", "how much electricity you consume", "how much sunlight hits it"],
