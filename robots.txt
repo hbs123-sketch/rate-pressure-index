@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://rate-pressure-index.vercel.app/sitemap.xml

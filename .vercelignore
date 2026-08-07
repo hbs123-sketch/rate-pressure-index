@@ -1,0 +1,12 @@
+.git
+.github
+.vercel
+node_modules
+debug.log
+screenshots
+scripts
+tests
+data/.cache
+data/.verify
+README.md
+requirements-dev.txt

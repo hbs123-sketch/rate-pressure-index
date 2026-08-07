@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
-import { bandForScore, computeComposite, normalizeZip } from "../src/scoring.js";
+import { bandForScore, computeComposite, normalizeZip, zipInputError } from "../src/scoring.js";
+import { resolveZipCoverage } from "../src/zip-lookup.js";
 
 const utilities = JSON.parse(await readFile(new URL("../data/utilities.json", import.meta.url), "utf8"));
 const zipToUtility = JSON.parse(await readFile(new URL("../data/zip-to-utility.json", import.meta.url), "utf8"));
@@ -26,7 +27,17 @@ assert.equal(zipToUtility["43215"], "14006");
 assert.equal(zipToUtility["30303"], "7140");
 assert.equal(zipToUtility["90210"], undefined);
 
-assert.equal(normalizeZip("ZIP 20147"), "20147");
+assert.equal(normalizeZip("ZIP 20147"), "");
+assert.equal(normalizeZip("20147"), "20147");
 assert.equal(normalizeZip("abc"), "");
+assert.equal(zipInputError("abcd"), "Enter a five-digit ZIP code using numbers only.");
+assert.equal(zipInputError("2014"), "Enter exactly five digits for the ZIP code.");
+assert.equal(zipInputError("201470"), "Enter exactly five digits for the ZIP code.");
+
+const testUtilities = new Map([["one", { utility_name: "One" }], ["two", { utility_name: "Two" }]]);
+assert.equal(resolveZipCoverage({ "11111": "one" }, testUtilities, "11111").type, "single");
+const ambiguousCoverage = resolveZipCoverage({ "22222": ["one", "two"] }, testUtilities, "22222");
+assert.equal(ambiguousCoverage.type, "ambiguous");
+assert.deepEqual(ambiguousCoverage.utilities.map((utility) => utility.utility_name), ["One", "Two"]);
 
 console.log("scoring and lookup tests passed");

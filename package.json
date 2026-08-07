@@ -7,9 +7,14 @@
     "generate:og": "node scripts/generate-og-cards.mjs",
     "test": "node tests/scoring.test.js",
     "test:source": "node tests/source-verification.mjs",
-    "test:browser": "node tests/browser-audit.mjs"
+    "test:browser": "node tests/browser-audit.mjs",
+    "test:a11y": "node tests/accessibility-audit.mjs",
+    "test:seo": "node tests/seo-audit.mjs",
+    "test:edge": "node tests/edge-case-audit.mjs",
+    "test:security": "node tests/security-audit.mjs"
   },
   "devDependencies": {
+    "axe-core": "^4.10.2",
     "playwright": "^1.62.0"
   }
 }

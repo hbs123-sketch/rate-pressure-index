@@ -8,7 +8,7 @@
   --accent: #075f63;
   --accent-strong: #06484b;
   --accent-soft: #e8f3f3;
-  --gold: #a86c07;
+  --gold: #7a4d00;
   --red: #b42318;
   --green: #287d3c;
   --row: #f8fafc;
@@ -175,6 +175,15 @@ button {
 button:hover,
 button:focus-visible {
   background: var(--accent-strong);
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 3px solid #0b7b7f;
+  outline-offset: 3px;
 }
 
 .form-error {
@@ -572,6 +581,13 @@ button:focus-visible {
   background: var(--accent);
 }
 
+.usage-controls input:focus-visible + span {
+  position: relative;
+  z-index: 1;
+  outline: 3px solid #0b7b7f;
+  outline-offset: -3px;
+}
+
 .usage-output {
   color: var(--ink);
   font-size: 1.25rem;
@@ -634,6 +650,252 @@ button:focus-visible {
   border-radius: 6px;
   padding: 20px;
   background: #eff7f5;
+}
+
+.personal-report-panel {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  gap: 24px;
+  align-items: start;
+  margin-top: 18px;
+  border: 1px solid #c8d3df;
+  border-radius: 6px;
+  padding: 20px;
+  background: #f7f9fc;
+}
+
+.personal-report-panel h3 {
+  margin-bottom: 8px;
+  font-size: 1.18rem;
+}
+
+.personal-report-panel > div > p {
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.personal-report-form {
+  display: grid;
+  gap: 14px;
+}
+
+.personal-report-form fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin: 0;
+  border: 0;
+  padding: 0;
+}
+
+.personal-report-form legend {
+  width: 100%;
+  margin-bottom: 2px;
+  font-weight: 800;
+}
+
+.report-choice {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.report-choice input {
+  width: 16px;
+  min-height: 16px;
+}
+
+.report-input {
+  display: grid;
+  gap: 6px;
+  color: var(--ink);
+  font-size: 0.88rem;
+  font-weight: 800;
+}
+
+.report-input input,
+.report-input select {
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: #fff;
+  font: inherit;
+}
+
+.guided-usage-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.guided-usage-fields[hidden] {
+  display: none;
+}
+
+.rate-class-help,
+.report-form-error {
+  margin: -5px 0 0;
+  color: var(--muted);
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.report-form-error {
+  color: var(--red);
+}
+
+.report-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.report-view {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 30px;
+  background: var(--panel);
+  box-shadow: 0 12px 36px rgba(23, 33, 47, 0.07);
+}
+
+.report-subtitle {
+  max-width: 68ch;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.personal-impact-card {
+  display: grid;
+  justify-items: start;
+  margin: 26px 0;
+  border-left: 5px solid var(--accent);
+  padding: 18px 20px;
+  background: var(--accent-soft);
+}
+
+.personal-impact-card > span {
+  color: var(--muted);
+  font-size: 0.8rem;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.personal-impact-card strong {
+  margin: 8px 0;
+  color: var(--accent-strong);
+  font-size: 3.3rem;
+  line-height: 1;
+}
+
+.personal-impact-card p {
+  max-width: 72ch;
+  margin: 14px 0 10px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.report-intake-summary {
+  margin: 26px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 20px 0;
+}
+
+.report-intake-summary h2,
+.report-drivers h2 {
+  margin-bottom: 12px;
+  font-size: 1.12rem;
+}
+
+.report-intake-summary dl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.report-intake-summary dl div {
+  border-left: 2px solid var(--line);
+  padding-left: 10px;
+}
+
+.report-intake-summary dt {
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.report-intake-summary dd {
+  margin: 5px 0 0;
+  font-weight: 850;
+}
+
+.report-intake-summary > p {
+  margin: 16px 0 0;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.report-driver-list {
+  border: 1px solid var(--line);
+}
+
+.report-driver-list article {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr) 180px;
+  gap: 18px;
+  align-items: start;
+  padding: 18px;
+}
+
+.report-driver-list article + article {
+  border-top: 1px solid var(--line);
+}
+
+.report-driver-list h3,
+.report-driver-list p {
+  margin: 0;
+}
+
+.report-driver-list h3 {
+  margin-bottom: 8px;
+  font-size: 0.95rem;
+}
+
+.report-driver-list span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.report-driver-list p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.report-empty {
+  max-width: 620px;
+}
+
+.report-link-button {
+  display: inline-grid;
+  min-height: 42px;
+  place-items: center;
+  border-radius: 4px;
+  padding: 0 13px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .recommendations-heading {
@@ -899,12 +1161,52 @@ button:focus-visible {
   margin-top: 30px;
 }
 
+.share-page {
+  width: min(680px, calc(100% - 32px));
+  margin: 48px auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 28px;
+  background: var(--panel);
+}
+
+.share-page h1 {
+  margin-bottom: 12px;
+  font-size: clamp(1.8rem, 4vw, 2.6rem);
+}
+
+.error-page {
+  max-width: 720px;
+  margin: 12vh auto;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 32px;
+  background: var(--panel);
+  box-shadow: 0 12px 36px rgba(23, 33, 47, 0.07);
+}
+
+.error-page h1 {
+  max-width: 18ch;
+}
+
+.error-page p:not(.eyebrow) {
+  max-width: 58ch;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.utility-list {
+  margin: 16px 0;
+  padding-left: 20px;
+}
+
 @media (max-width: 860px) {
   .lookup-panel,
   .narrative-hero,
   .numbers-grid,
   .comparison-panel,
-  .usage-panel {
+  .usage-panel,
+  .personal-report-panel {
     grid-template-columns: 1fr;
   }
 
@@ -987,6 +1289,15 @@ button:focus-visible {
     gap: 12px;
   }
 
+  .report-driver-list article {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .report-intake-summary dl {
+    grid-template-columns: 1fr;
+  }
+
   .source-list {
     justify-content: flex-start;
   }
@@ -1013,7 +1324,8 @@ button:focus-visible {
   }
 
   .input-row,
-  .waitlist-form {
+  .waitlist-form,
+  .guided-usage-fields {
     grid-template-columns: 1fr;
   }
 }

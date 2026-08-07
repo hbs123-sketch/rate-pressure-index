@@ -1,15 +1,14 @@
-import { FACTORS, bandForScore, computeComposite, normalizeZip } from "./scoring.js";
+import { FACTORS, bandForScore, computeComposite, normalizeZip, zipInputError } from "./scoring.js";
+import { checkPaymentStatus } from "./payment-gate.js";
+import { buildPersonalReport, intakeFromForm, renderPersonalReportIntake } from "./personal-report.js";
+import { resolveZipCoverage } from "./zip-lookup.js";
 
-const [utilitiesResponse, zipResponse, recommendationsResponse] = await Promise.all([
-  fetch("data/utilities.json"),
-  fetch("data/zip-to-utility.json"),
-  fetch("data/recommendations.json")
-]);
-
-const utilities = await utilitiesResponse.json();
-const zipToUtility = await zipResponse.json();
-const recommendations = await recommendationsResponse.json();
-const utilitiesById = new Map(utilities.map((utility) => [utility.utility_id, utility]));
+let utilities = [];
+let zipToUtility = {};
+let recommendations = {};
+let utilitiesById = new Map();
+let dataReady = false;
+let lookupRequestId = 0;
 
 const form = document.querySelector("#lookup-form");
 const zipInput = document.querySelector("#zip");
@@ -17,8 +16,51 @@ const formError = document.querySelector("#form-error");
 const result = document.querySelector("#result");
 const notCovered = document.querySelector("#not-covered");
 const pilotPreview = document.querySelector("#pilot-preview");
+const submitButton = form.querySelector('button[type="submit"]');
 
-if (pilotPreview) {
+setLookupBusy(true);
+void loadIndexData();
+
+form.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!dataReady) {
+    formError.textContent = "The index data is unavailable right now. Refresh to try again.";
+    return;
+  }
+  handleLookup(zipInput.value);
+});
+
+async function loadIndexData() {
+  try {
+    const [utilitiesResponse, zipResponse, recommendationsResponse] = await Promise.all([
+      fetch("data/utilities.json"),
+      fetch("data/zip-to-utility.json"),
+      fetch("data/recommendations.json")
+    ]);
+    if (![utilitiesResponse, zipResponse, recommendationsResponse].every((response) => response.ok)) {
+      throw new Error("Index data request failed");
+    }
+    [utilities, zipToUtility, recommendations] = await Promise.all([
+      utilitiesResponse.json(),
+      zipResponse.json(),
+      recommendationsResponse.json()
+    ]);
+    utilitiesById = new Map(utilities.map((utility) => [utility.utility_id, utility]));
+    dataReady = true;
+    setLookupBusy(false);
+    renderPilotPreview();
+    const params = new URLSearchParams(location.search);
+    if (params.has("zip")) {
+      zipInput.value = params.get("zip");
+      await handleLookup(zipInput.value);
+    }
+  } catch {
+    showDataLoadFailure();
+  }
+}
+
+function renderPilotPreview() {
+  if (!pilotPreview) return;
   pilotPreview.innerHTML = utilities.map((utility) => `
     <article class="pilot-card">
       <span>${utility.utility_name}</span>
@@ -28,38 +70,70 @@ if (pilotPreview) {
   `).join("");
 }
 
-const params = new URLSearchParams(location.search);
-if (params.has("zip")) {
-  zipInput.value = normalizeZip(params.get("zip"));
-  handleLookup(zipInput.value);
-}
-
-form.addEventListener("submit", (event) => {
-  event.preventDefault();
-  handleLookup(zipInput.value);
-});
-
-function handleLookup(rawZip) {
+async function handleLookup(rawZip) {
   const zip = normalizeZip(rawZip);
   formError.textContent = "";
 
   if (!zip) {
-    formError.textContent = "Enter a valid five-digit ZIP code.";
+    formError.textContent = zipInputError(rawZip);
     result.hidden = true;
     notCovered.hidden = true;
     return;
   }
 
-  const utilityId = zipToUtility[zip];
-  const utility = utilitiesById.get(utilityId);
+  const coverage = resolveZipCoverage(zipToUtility, utilitiesById, zip);
 
-  if (!utility) {
-    showNotCovered(zip);
+  if (coverage.type === "single") {
+    showResult(zip, coverage.utility);
+    history.replaceState(null, "", `?zip=${zip}`);
     return;
   }
 
-  showResult(zip, utility);
-  history.replaceState(null, "", `?zip=${zip}`);
+  if (coverage.type === "ambiguous") {
+    showAmbiguousCoverage(zip, coverage.utilities);
+    return;
+  }
+
+  const requestId = ++lookupRequestId;
+  setLookupBusy(true);
+  try {
+    const exists = await verifyZipExists(zip);
+    if (requestId !== lookupRequestId) return;
+    if (exists) showNotCovered(zip);
+    else showInvalidZip(zip);
+  } catch {
+    if (requestId === lookupRequestId) showZipVerificationUnavailable(zip);
+  } finally {
+    if (requestId === lookupRequestId) setLookupBusy(false);
+  }
+}
+
+async function verifyZipExists(zip) {
+  const response = await fetch(`https://api.zippopotam.us/us/${zip}`);
+  if (response.status === 404) return false;
+  if (!response.ok) throw new Error("ZIP verification failed");
+  return true;
+}
+
+function setLookupBusy(isBusy) {
+  form.setAttribute("aria-busy", String(isBusy));
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "Loading" : "Check";
+}
+
+function showDataLoadFailure() {
+  dataReady = false;
+  form.setAttribute("aria-busy", "false");
+  submitButton.disabled = true;
+  submitButton.textContent = "Unavailable";
+  result.innerHTML = `
+    <p class="eyebrow">Index unavailable</p>
+    <h2>We couldn't load the Rate Pressure Index data.</h2>
+    <p>Refresh the page to try again. No score was calculated.</p>
+  `;
+  result.hidden = false;
+  notCovered.hidden = true;
+  formError.textContent = "The index data is unavailable right now. Refresh to try again.";
 }
 
 function showResult(zip, utility) {
@@ -71,6 +145,7 @@ function showResult(zip, utility) {
     ${renderNarrativeHero(utility, zip, score, band)}
     <p class="disclaimer">This is an indicator built from public data, not a determination of cause. <a class="method-link" href="methodology.html">See methodology.</a></p>
     ${renderUsageEstimator(utility)}
+    ${renderPersonalReportIntake(utility)}
     ${renderRecommendations(utility)}
     ${renderEvidence(utility)}
   `;
@@ -399,9 +474,34 @@ function formatMonthlyImpact(value) {
 
 result.addEventListener("change", (event) => {
   const target = event.target;
+  if (target instanceof HTMLInputElement && target.name === "usage-method") {
+    const form = target.closest("[data-personal-report-form]");
+    if (form) {
+      form.querySelector(".exact-usage-field").hidden = target.value !== "exact";
+      form.querySelector(".guided-usage-fields").hidden = target.value !== "guided";
+    }
+    return;
+  }
   if (!(target instanceof HTMLInputElement) || !target.matches("[data-impact]")) return;
   const output = target.closest(".usage-panel")?.querySelector("[data-usage-output]");
   if (output) output.textContent = formatMonthlyImpact(target.dataset.impact);
+});
+
+result.addEventListener("submit", async (event) => {
+  const form = event.target;
+  if (!(form instanceof HTMLFormElement) || !form.matches("[data-personal-report-form]")) return;
+  event.preventDefault();
+  const error = form.querySelector(".report-form-error");
+  try {
+    const utility = utilitiesById.get(form.dataset.utilityId);
+    const intake = intakeFromForm(form);
+    const paid = await checkPaymentStatus();
+    if (!paid) throw new Error("Payment confirmation is required before this report can be opened.");
+    sessionStorage.setItem("rpi-personal-report", JSON.stringify(buildPersonalReport(utility, intake)));
+    location.assign(`report.html?utility=${utility.utility_id}`);
+  } catch (issue) {
+    error.textContent = issue.message || "We could not generate the report.";
+  }
 });
 
 result.addEventListener("click", (event) => {
@@ -450,13 +550,34 @@ async function copyShareUrl(shareUrl, button) {
 
 function setShareMetadata(utility, zip) {
   const title = `${utility.utility_name}: ${utility.composite_score} ${utility.band} | Rate Pressure Index`;
-  const description = `Public-data rate pressure indicator for ZIP ${zip}: ${utility.utility_name} scores ${utility.composite_score}, ${utility.band}.`;
+  const description = `Public-data rate pressure indicator for ZIP ${zip}: ${utility.utility_name} scores ${utility.composite_score}, ${utility.band}, using five cited public-data factors.`;
+  const canonicalUrl = new URL(`?zip=${zip}`, location.origin).href;
   document.title = title;
   upsertMeta("description", description);
   upsertMeta("og:title", title, "property");
   upsertMeta("og:description", description, "property");
   upsertMeta("og:image", new URL(utility.share_card.image_url, location.href).href, "property");
+  upsertMeta("og:url", canonicalUrl, "property");
   upsertMeta("twitter:card", "summary_large_image", "name");
+  upsertMeta("twitter:title", title, "name");
+  upsertMeta("twitter:description", description, "name");
+  upsertCanonical(canonicalUrl);
+  upsertJsonLd("rate-pressure-index-result", {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    name: `${utility.utility_name} Rate Pressure Index`,
+    description: `${description} It is not a causal determination.`,
+    url: canonicalUrl,
+    isAccessibleForFree: true,
+    spatialCoverage: utility.state,
+    variableMeasured: FACTORS.map(([key]) => ({
+      "@type": "PropertyValue",
+      name: key.replace("_score", "").replaceAll("_", " "),
+      value: utility[key],
+      unitText: "0-100 evidence score"
+    })),
+    citation: factorSourceUrls(utility)
+  });
 }
 
 function upsertMeta(key, content, attr = "name") {
@@ -469,12 +590,41 @@ function upsertMeta(key, content, attr = "name") {
   meta.setAttribute("content", content);
 }
 
+function upsertCanonical(url) {
+  let canonical = document.head.querySelector('link[rel="canonical"]');
+  if (!canonical) {
+    canonical = document.createElement("link");
+    canonical.rel = "canonical";
+    document.head.appendChild(canonical);
+  }
+  canonical.href = url;
+}
+
+function upsertJsonLd(id, value) {
+  let script = document.getElementById(id);
+  if (!script) {
+    script = document.createElement("script");
+    script.id = id;
+    script.type = "application/ld+json";
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(value);
+}
+
+function factorSourceUrls(utility) {
+  return [...new Set(FACTORS.flatMap(([key]) => {
+    const sourceKey = sourceKeyForFactor(key);
+    const value = utility[sourceKey];
+    return Array.isArray(value) ? value : [value];
+  }))];
+}
+
 
 function showNotCovered(zip) {
   notCovered.innerHTML = `
     <p class="eyebrow">ZIP ${zip}</p>
     <h2>Not covered yet</h2>
-    <p>This v1 pilot covers selected ZIP codes for Dominion Energy Virginia, AEP Ohio, and Georgia Power. Leave an email if you want a note when this utility is added.</p>
+    <p>This ZIP exists, but it is outside the selected pilot coverage for Dominion Energy Virginia, AEP Ohio, and Georgia Power. No score was calculated.</p>
     <form class="waitlist-form" id="waitlist-form">
       <input name="email" type="email" placeholder="you@example.com" required>
       <button type="submit">Notify me</button>
@@ -494,4 +644,36 @@ function showNotCovered(zip) {
     notCovered.querySelector("#waitlist-status").textContent = "Saved locally for this v1 prototype.";
     event.currentTarget.reset();
   });
+}
+
+function showInvalidZip(zip) {
+  notCovered.innerHTML = `
+    <p class="eyebrow">ZIP ${zip}</p>
+    <h2>No such ZIP code</h2>
+    <p>We couldn't verify this as a current U.S. ZIP code. Check the five digits and try again.</p>
+  `;
+  result.hidden = true;
+  notCovered.hidden = false;
+}
+
+function showAmbiguousCoverage(zip, matchedUtilities) {
+  notCovered.innerHTML = `
+    <p class="eyebrow">ZIP ${zip}</p>
+    <h2>More than one utility may serve this ZIP</h2>
+    <p>ZIP codes do not reliably align to electric service territories, so this pilot will not assign one score without a confirmed utility.</p>
+    <ul class="utility-list">${matchedUtilities.map((utility) => `<li>${utility.utility_name}</li>`).join("")}</ul>
+    <p>Check the utility name on your electricity bill, then use a ZIP in the supported pilot list.</p>
+  `;
+  result.hidden = true;
+  notCovered.hidden = false;
+}
+
+function showZipVerificationUnavailable(zip) {
+  notCovered.innerHTML = `
+    <p class="eyebrow">ZIP ${zip}</p>
+    <h2>We couldn't verify this ZIP code</h2>
+    <p>The pilot data loaded, but ZIP verification is temporarily unavailable. Refresh to try again; no score was calculated.</p>
+  `;
+  result.hidden = true;
+  notCovered.hidden = false;
 }
