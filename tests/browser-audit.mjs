@@ -75,6 +75,9 @@ for (const testCase of cases) {
   assert.ok(body.toLowerCase().includes("bill impact estimate"), `${utility.utility_name} renders bill impact estimate`);
   assert.ok(body.includes("Based on this utility's published rate information"), `${utility.utility_name} explains its usage scaling`);
   assert.ok(body.includes(utility.usage_scaling.display_context.text), `${utility.utility_name} renders plain-language impact timing`);
+  if (utility.usage_scaling.display_context.score_context) {
+    assert.ok(body.includes(utility.usage_scaling.display_context.score_context), `${utility.utility_name} resolves the relationship between its bill figure and Evidence Index`);
+  }
   assert.equal(await page.locator(".hero-impact strong").count(), 1, `${utility.utility_name} promotes the published household impact`);
   assert.equal(await page.locator(".score-box .score").count(), 1, `${utility.utility_name} keeps the score visible as secondary context`);
   assert.equal(await page.locator(".evidence-panel[open]").count(), 0, `${utility.utility_name} evidence starts collapsed`);

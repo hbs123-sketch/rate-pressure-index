@@ -433,6 +433,19 @@ summary:focus-visible {
   margin-left: 8px;
   font-weight: 800;
 }
+
+.score-context {
+  flex-basis: 100%;
+  max-width: 68ch;
+  margin: 6px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid color-mix(in srgb, var(--rust) 72%, transparent);
+  color: var(--ink);
+  font-family: "Aptos", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font-size: 0.91rem;
+  font-weight: 600;
+  line-height: 1.45;
+}
 .band.low {
   background: var(--green);
 }

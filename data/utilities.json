@@ -181,6 +181,7 @@
       "display_context": {
         "label": "Estimated household impact from AEP Ohio's bill update",
         "text": "AEP Ohio says the changes described in this bill update net about $0.22/mo for a 1,000 kWh Standard Service Offer customer. The page does not identify an effective date.",
+        "score_context": "This reflects two different things: this bill-update example nets about $0.22/mo for one 1,000 kWh customer, while the grid-constraint, tariff-protection, and buildout-scale factors driving the Evidence Index remain elevated.",
         "sources": [
           {
             "url": "https://www.aepohio.com/company/news/view?releaseID=10825",
@@ -294,6 +295,7 @@
       "display_context": {
         "label": "Estimated household benefit under the plan through 2028",
         "text": "Georgia Power says large-load revenue should provide benefits equivalent to $8.50/mo for a typical residential customer using 1,000 kWh; base rates are frozen through at least 2028, excluding storm costs.",
+        "score_context": "This reflects two different things: large-load revenue is currently projected to lower typical bills, while the grid-constraint, tariff-protection, and buildout-scale factors driving the Evidence Index remain elevated.",
         "sources": [
           {
             "url": "https://www.georgiapower.com/news-hub/press-releases/psc-approves-savings-for-customers-and-energy-demands.html",
