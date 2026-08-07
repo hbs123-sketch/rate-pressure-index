@@ -64,7 +64,18 @@
       "base_monthly_dollars": 13.6,
       "base_label": "average residential bill",
       "timeframe": "Approved for 2026-2027",
-      "source_url": "https://www.dominionenergy.com/virginia/rates-and-tariffs/understanding-rates?sc_lang=en"
+      "source_url": "https://www.dominionenergy.com/virginia/rates-and-tariffs/understanding-rates?sc_lang=en",
+      "display_context": {
+        "label": "Estimated household impact by 2027",
+        "text": "Dominion says the average residential bill rises by $11.24/mo in 2026, then by another $2.36/mo in 2027.",
+        "sources": [
+          {
+            "url": "https://www.dominionenergy.com/virginia/rates-and-tariffs/understanding-rates?sc_lang=en",
+            "label": "Dominion rate information",
+            "verification_terms": ["average residential bill", "$11.24", "$2.36", "2026", "2027"]
+          }
+        ]
+      }
     },
     "historical_rate_series": {
       "title": "Residential average price, bundled service",
@@ -166,7 +177,18 @@
       "base_usage_kwh": 1000,
       "base_label": "1,000 kWh SSO customer",
       "timeframe": "April 2026 change",
-      "source_url": "https://www.aepohio.com/company/news/view?releaseID=10825"
+      "source_url": "https://www.aepohio.com/company/news/view?releaseID=10825",
+      "display_context": {
+        "label": "Estimated household impact from AEP Ohio's bill update",
+        "text": "AEP Ohio says the changes described in this bill update net about $0.22/mo for a 1,000 kWh Standard Service Offer customer. The page does not identify an effective date.",
+        "sources": [
+          {
+            "url": "https://www.aepohio.com/company/news/view?releaseID=10825",
+            "label": "AEP Ohio bill update",
+            "verification_terms": ["1,000 kilowatt-hours", "$0.22"]
+          }
+        ]
+      }
     },
     "historical_rate_series": {
       "title": "Residential average price, bundled service",
@@ -268,7 +290,23 @@
       "base_usage_kwh": 1000,
       "base_label": "typical 1,000 kWh residential customer",
       "timeframe": "Base-rate plan through 2028",
-      "source_url": "https://www.georgiapower.com/news-hub/press-releases/psc-approves-savings-for-customers-and-energy-demands.html"
+      "source_url": "https://www.georgiapower.com/news-hub/press-releases/psc-approves-savings-for-customers-and-energy-demands.html",
+      "display_context": {
+        "label": "Estimated household benefit under the plan through 2028",
+        "text": "Georgia Power says large-load revenue should provide benefits equivalent to $8.50/mo for a typical residential customer using 1,000 kWh; base rates are frozen through at least 2028, excluding storm costs.",
+        "sources": [
+          {
+            "url": "https://www.georgiapower.com/news-hub/press-releases/psc-approves-savings-for-customers-and-energy-demands.html",
+            "label": "Georgia Power customer-benefit filing",
+            "verification_terms": ["$8.50 per month", "typical residential customer using 1,000 kilowatt-hours"]
+          },
+          {
+            "url": "https://www.georgiapower.com/news-hub/press-releases/georgia-psc-approves-plan-to-freeze-base-rates-through-2028.html",
+            "label": "Georgia Power base-rate plan",
+            "verification_terms": ["freeze Georgia Power base rates through at least 2028", "storm costs"]
+          }
+        ]
+      }
     },
     "historical_rate_series": {
       "title": "Residential average price, bundled service",

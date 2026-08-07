@@ -130,11 +130,11 @@ function showResult(zip, utility) {
 
   result.innerHTML = `
     ${renderNarrativeHero(utility, zip, score, band)}
-    <p class="disclaimer">This is an indicator built from public data, not a determination of cause. <a class="method-link" href="methodology.html">See methodology.</a></p>
     ${renderUsageEstimator(utility)}
     ${renderPersonalReportIntake(utility)}
     ${renderRecommendations(utility)}
     ${renderEvidence(utility)}
+    ${renderUpdatedFooter(utility)}
   `;
 
   result.hidden = false;
@@ -145,8 +145,9 @@ function renderNarrativeHero(utility, zip, score, band) {
   const loadStat = findStatistic(utility, [/data centers?/i, /contracted load/i, /new contracts/i]);
   const billStat = findStatistic(utility, [/bill increase/i, /net bill change/i, /customer benefit/i]);
   const scaling = utility.usage_scaling;
+  const displayContext = scaling?.display_context;
   const story = loadStat && billStat
-    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>, while its cited household change is <a href="${billStat.source_url}" target="_blank" rel="noreferrer">${billStat.value}</a>.`
+    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>. The household figure below is based on <a href="${billStat.source_url}" target="_blank" rel="noreferrer">its published rate information</a>.`
     : `${utility.utility_name}'s public-data inputs are summarized below.`;
   return `
     <section class="narrative-hero">
@@ -156,9 +157,9 @@ function renderNarrativeHero(utility, zip, score, band) {
         <p class="state-line">${utility.state} - ${utility.rto_iso}</p>
         ${scaling ? `
           <div class="hero-impact">
-            <span>Estimated household ${scaling.base_monthly_dollars < 0 ? "benefit" : "impact"}</span>
+            <span>${displayContext?.label || `Estimated household ${scaling.base_monthly_dollars < 0 ? "benefit" : "impact"}`}</span>
             <strong>${formatMonthlyImpact(scaling.base_monthly_dollars).replace("Estimated impact: ", "").replace("Estimated benefit: ", "")}</strong>
-            <em class="timeframe-tag">${scaling.timeframe}</em>
+            ${displayContext ? `<p class="hero-timing">${displayContext.text} ${displayContext.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer">${source.label}</a>`).join(" ")}</p>` : ""}
           </div>
         ` : ""}
         <p class="narrative-copy">${story}</p>
@@ -168,20 +169,10 @@ function renderNarrativeHero(utility, zip, score, band) {
         <span class="score-label">Evidence index</span>
         <div class="score">${score}<span>/100</span></div>
         <span class="band ${band.toLowerCase()}">${band}</span>
-        <p class="score-meaning">${scoreMeaning(band)}</p>
         ${renderShareButton(utility)}
       </div>
     </section>
   `;
-}
-
-function scoreMeaning(band) {
-  return {
-    Low: "Current public signals point to limited rate pressure from data-center buildout in this territory.",
-    Moderate: "Public signals show some rate pressure to watch, but the picture is not yet elevated.",
-    Elevated: "Several public signals point to meaningful rate pressure as the grid expands for large new loads.",
-    High: "Public signals show strong rate-pressure risk while the grid prepares for very large new loads."
-  }[band];
 }
 
 function renderShareButton(utility) {
@@ -350,7 +341,7 @@ function renderUsageEstimator(utility) {
       <div>
         <div class="section-kicker">Bill impact estimate</div>
         <h3>Choose the usage level closest to your household.</h3>
-        <p>Based on the cited rate action for this tier. It is an estimate, not a bill forecast.</p>
+        <p>Based on this utility's published rate information. It is an estimate, not a bill forecast.</p>
       </div>
       <div class="usage-controls" role="group" aria-label="Usage level">
         ${options.map(([value, multiplier, label], index) => `
@@ -364,7 +355,7 @@ function renderUsageEstimator(utility) {
         <div class="usage-output" data-usage-output>
           ${formatMonthlyImpact(scaling.base_monthly_dollars)}
         </div>
-        <span class="timeframe-tag">${scaling.timeframe}</span>
+        <span class="usage-timing">${scaling.display_context?.label || scaling.timeframe}</span>
       </div>
       <a href="${scaling.source_url}" target="_blank" rel="noreferrer">Source</a>
     </section>
@@ -375,12 +366,15 @@ function renderWhatsChanged(utility) {
   if (!utility.whats_changed) return "";
   return `
     <p class="change-line">
-      <span class="updated">Updated ${utility.last_updated}</span><span aria-hidden="true"> | </span>
       <strong>Changed ${utility.whats_changed.date}:</strong>
       ${utility.whats_changed.text}
       <a href="${utility.whats_changed.source_url}" target="_blank" rel="noreferrer">Source</a>
     </p>
   `;
+}
+
+function renderUpdatedFooter(utility) {
+  return `<p class="updated-footer">Last updated ${utility.last_updated}</p>`;
 }
 
 function renderEvidence(utility) {
@@ -450,7 +444,6 @@ function renderRegulatoryStatus(utility) {
       <h3>Regulatory status</h3>
       <div><span>Tariff status</span><strong>${formatStatus(utility.tariff_status)}</strong></div>
       <div><span>Tariff effective date</span><strong>${utility.tariff_effective_date || "Not applicable"}</strong></div>
-      <div><span>Last updated</span><strong>${utility.last_updated}</strong></div>
       <a href="${tariffSource}" target="_blank" rel="noreferrer">Tariff source</a>
       <a href="${utility.share_card.share_url}">Share card preview</a>
     </section>
@@ -546,7 +539,7 @@ async function copyShareUrl(shareUrl, button) {
 
 function setShareMetadata(utility, zip) {
   const title = `${utility.utility_name}: ${utility.composite_score} ${utility.band} | Rate Pressure Index`;
-  const description = `Public-data rate pressure indicator for ZIP ${zip}: ${utility.utility_name} scores ${utility.composite_score}, ${utility.band}, using five cited public-data factors.`;
+  const description = `Public-data rate pressure indicator for ZIP ${zip}: ${utility.utility_name} scores ${utility.composite_score}, ${utility.band}, using five sourced public-data factors.`;
   const canonicalUrl = new URL(`?zip=${zip}`, location.origin).href;
   document.title = title;
   upsertMeta("description", description);

@@ -69,19 +69,18 @@ for (const testCase of cases) {
   assert.ok(body.includes(utility.utility_name), `${utility.utility_name} renders utility name`);
   assert.ok(body.includes(String(utility.composite_score)), `${utility.utility_name} renders score`);
   assert.ok(body.includes(utility.band), `${utility.utility_name} renders band`);
-  assert.ok(body.includes(scoreMeaning(utility.band)), `${utility.utility_name} renders band-specific score meaning`);
-  assert.ok(
-    body.includes("indicator built from public data, not a determination of cause"),
-    `${utility.utility_name} renders causal-framing disclaimer`
-  );
+  assert.equal(await page.locator(".score-meaning").count(), 0, `${utility.utility_name} removes redundant score explanation`);
+  assert.equal(body.includes("indicator built from public data, not a determination of cause"), false, `${utility.utility_name} keeps causal framing off the result page`);
   assert.ok(body.toLowerCase().includes("bill impact estimate"), `${utility.utility_name} renders bill impact estimate`);
-  assert.ok(body.includes("Based on the cited rate action for this tier"), `${utility.utility_name} explains its usage scaling`);
-  assert.ok(body.includes(utility.usage_scaling.timeframe), `${utility.utility_name} renders bill-impact timeframe`);
-  assert.equal(await page.locator(".hero-impact strong").count(), 1, `${utility.utility_name} promotes the cited household impact`);
+  assert.ok(body.includes("Based on this utility's published rate information"), `${utility.utility_name} explains its usage scaling`);
+  assert.ok(body.includes(utility.usage_scaling.display_context.text), `${utility.utility_name} renders plain-language impact timing`);
+  assert.equal(await page.locator(".hero-impact strong").count(), 1, `${utility.utility_name} promotes the published household impact`);
   assert.equal(await page.locator(".score-box .score").count(), 1, `${utility.utility_name} keeps the score visible as secondary context`);
   assert.equal(await page.locator(".evidence-panel[open]").count(), 0, `${utility.utility_name} evidence starts collapsed`);
   assert.ok(body.includes("See the evidence behind this score"), `${utility.utility_name} renders evidence expander`);
   assert.ok(body.includes(utility.whats_changed.text), `${utility.utility_name} renders whats_changed text`);
+  assert.equal(await page.locator(".updated-footer").count(), 1, `${utility.utility_name} renders a low-emphasis updated footer`);
+  assert.equal(body.toLowerCase().includes("cited"), false, `${utility.utility_name} removes cited from visitor-facing copy`);
   assert.equal(await page.locator(".metadata-footer").count(), 0, `${utility.utility_name} no longer renders a metadata footer`);
   const shareButton = page.locator(".share-button");
   const expectedShareUrl = new URL(utility.share_card.share_url, page.url()).href;
@@ -139,14 +138,14 @@ for (const testCase of cases) {
   assert.ok(reportBody.toLowerCase().includes("personalized deep dive"), `${utility.utility_name} opens report view`);
   assert.ok(reportBody.includes("1,400 kWh"), `${utility.utility_name} report includes exact usage`);
   assert.ok(reportBody.includes("What is driving this report"), `${utility.utility_name} report explains drivers`);
-  assert.ok(reportBody.includes(utility.grid_constraint_note), `${utility.utility_name} report retains cited factor notes`);
+  assert.ok(reportBody.includes(utility.grid_constraint_note), `${utility.utility_name} report retains sourced factor notes`);
   const expectedPersonalImpact = `$${Math.abs(utility.usage_scaling.base_usage_kwh
     ? utility.usage_scaling.base_monthly_dollars * 1.4
     : utility.usage_scaling.base_monthly_dollars).toFixed(2)}/mo`;
   assert.ok(reportBody.includes(expectedPersonalImpact), `${utility.utility_name} report renders personalized impact`);
   if (utility.usage_scaling.base_usage_kwh) {
     assert.ok(
-      reportBody.includes("This is a proportional estimate from a single cited usage case, not an independently sourced rate for your specific usage level."),
+      reportBody.includes("This is a proportional estimate from one published usage case, not a rate published for your specific usage level."),
       `${utility.utility_name} report discloses its single-case scaling limitation`
     );
     assert.ok(
@@ -168,7 +167,7 @@ for (const testCase of cases) {
   assert.ok(body.includes(utility.rate_trend_comparison.utility_value), `${utility.utility_name} renders utility baseline comparison`);
   assert.ok(body.includes(utility.rate_trend_comparison.national_value), `${utility.utility_name} renders national baseline comparison`);
   assert.ok(body.includes("Regulatory status"), `${utility.utility_name} renders regulatory status in evidence`);
-  assert.ok(body.includes(utility.last_updated), `${utility.utility_name} renders last_updated in evidence`);
+  assert.ok(body.includes(utility.last_updated), `${utility.utility_name} renders last_updated in its footer`);
   assert.ok(body.includes(formatStatus(utility.tariff_status)), `${utility.utility_name} renders tariff status in evidence`);
   assert.ok(body.includes(utility.historical_rate_series.title), `${utility.utility_name} renders EIA historical chart`);
   for (const point of utility.historical_rate_series.values) {
@@ -262,6 +261,7 @@ function allSourceUrls(utility) {
   urls.push(...utility.by_the_numbers.map((stat) => stat.source_url));
   urls.push(utility.rate_trend_comparison.utility_source_url, utility.rate_trend_comparison.national_source_url);
   urls.push(utility.usage_scaling.source_url, utility.whats_changed.source_url);
+  urls.push(...(utility.usage_scaling.display_context?.sources || []).map((source) => source.url));
   urls.push(utility.historical_rate_series.source_url);
   for (const [, category] of recommendationItemsForState(utility.state)) {
     urls.push(category.source_url || recommendations.eligibility[category.eligibility][utility.state].source_url);
@@ -284,13 +284,4 @@ function formatMonthlyImpact(value) {
   const formatted = `$${amount.toFixed(2)}/mo`;
   if (Number(value) < 0) return `Estimated benefit: ${formatted}`;
   return `Estimated impact: ${formatted}`;
-}
-
-function scoreMeaning(band) {
-  return {
-    Low: "Current public signals point to limited rate pressure from data-center buildout in this territory.",
-    Moderate: "Public signals show some rate pressure to watch, but the picture is not yet elevated.",
-    Elevated: "Several public signals point to meaningful rate pressure as the grid expands for large new loads.",
-    High: "Public signals show strong rate-pressure risk while the grid prepares for very large new loads."
-  }[band];
 }

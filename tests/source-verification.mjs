@@ -118,6 +118,10 @@ for (const [category, entry] of Object.entries(recommendations.categories)) {
 
 for (const utility of utilities) {
   assert.equal(utility.composite_score, expectedComposite(utility), `${utility.utility_name} score unchanged`);
+  for (const source of utility.usage_scaling.display_context?.sources || []) {
+    await verifyHtml(source.url, source.verification_terms);
+    console.log(`verified ${utility.utility_name} impact timing`);
+  }
 }
 
 const historicalVerification = await execFile(python, ["scripts/verify-eia-historical.py"], { maxBuffer: 20 * 1024 * 1024 });
