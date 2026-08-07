@@ -16,6 +16,8 @@ data/.verify/
 # Tool output
 playwright-report/
 test-results/
+screenshots/
+debug.log
 
 # OS metadata
 .DS_Store

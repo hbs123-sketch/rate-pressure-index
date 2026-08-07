@@ -25,6 +25,13 @@ await mkdir(screenshotDir, { recursive: true });
 
 const browser = await chromium.launch({ headless: true });
 const context = await browser.newContext({ viewport: { width: 1366, height: 1200 } });
+await context.route("https://api.zippopotam.us/us/**", async (route) => {
+  await route.fulfill({
+    status: 200,
+    contentType: "application/json",
+    body: JSON.stringify({ "post code": "90210", country: "United States", places: [] })
+  });
+});
 await context.grantPermissions(["clipboard-read", "clipboard-write"], { origin: new URL(baseUrl).origin });
 const page = await context.newPage();
 const mobileContext = await browser.newContext({ viewport: { width: 390, height: 1200 }, deviceScaleFactor: 1 });
@@ -117,6 +124,40 @@ for (const testCase of cases) {
     input.checked = true;
     input.dispatchEvent(new Event("change", { bubbles: true }));
   });
+
+  const reportForm = page.locator("[data-personal-report-form]");
+  assert.equal(await reportForm.count(), 1, `${utility.utility_name} renders personalized report intake`);
+  assert.equal(await reportForm.locator(".rate-class-field").count(), utility.utility_id === "14006" ? 1 : 0, `${utility.utility_name} asks a rate-class question only when relevant`);
+  assert.equal(await reportForm.locator(".guided-usage-fields").isHidden(), true, `${utility.utility_name} starts report intake with exact usage`);
+  await reportForm.locator("input[name=\"exact-usage\"]").fill("1400");
+  if (utility.utility_id === "14006") await reportForm.locator("select[name=\"rate-class\"]").selectOption("sso");
+  await reportForm.locator("button[type=\"submit\"]").click();
+  await page.waitForURL(new RegExp(`report(?:\\.html)?\\?utility=${utility.utility_id}`));
+  const reportBody = await page.locator("body").innerText();
+  assert.ok(reportBody.toLowerCase().includes("personalized deep dive"), `${utility.utility_name} opens report view`);
+  assert.ok(reportBody.includes("1,400 kWh"), `${utility.utility_name} report includes exact usage`);
+  assert.ok(reportBody.includes("What is driving this report"), `${utility.utility_name} report explains drivers`);
+  assert.ok(reportBody.includes(utility.grid_constraint_note), `${utility.utility_name} report retains cited factor notes`);
+  const expectedPersonalImpact = `$${Math.abs(utility.usage_scaling.base_usage_kwh
+    ? utility.usage_scaling.base_monthly_dollars * 1.4
+    : utility.usage_scaling.base_monthly_dollars).toFixed(2)}/mo`;
+  assert.ok(reportBody.includes(expectedPersonalImpact), `${utility.utility_name} report renders personalized impact`);
+  if (utility.usage_scaling.base_usage_kwh) {
+    assert.ok(
+      reportBody.includes("This is a proportional estimate from a single cited usage case, not an independently sourced rate for your specific usage level."),
+      `${utility.utility_name} report discloses its single-case scaling limitation`
+    );
+    assert.ok(
+      reportBody.includes("Actual bills may not scale perfectly linearly with usage because of tiered rates, fixed charges, and other factors."),
+      `${utility.utility_name} report discloses non-linear bill factors`
+    );
+  }
+  await page.screenshot({ path: `${screenshotDir}/${screenshotPrefix}-report-${testCase.zip}.png`, fullPage: true });
+  await page.goBack({ waitUntil: "networkidle" });
+
+  await reportForm.locator("input[value=\"guided\"]").check();
+  assert.equal(await reportForm.locator(".guided-usage-fields").isHidden(), false, `${utility.utility_name} opens guided usage intake`);
+  await reportForm.locator("input[value=\"exact\"]").check();
 
   await page.locator(".evidence-panel summary").click();
   await page.screenshot({ path: `${screenshotDir}/${screenshotPrefix}-${testCase.zip}-evidence.png`, fullPage: true });

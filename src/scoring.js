@@ -29,6 +29,14 @@ export function bandForScore(score) {
 }
 
 export function normalizeZip(value) {
-  const match = String(value || "").match(/\b(\d{5})\b/);
-  return match ? match[1] : "";
+  const zip = String(value || "").trim();
+  return /^\d{5}$/.test(zip) ? zip : "";
+}
+
+export function zipInputError(value) {
+  const zip = String(value || "").trim();
+  if (!zip) return "Enter a five-digit ZIP code.";
+  if (!/^\d+$/.test(zip)) return "Enter a five-digit ZIP code using numbers only.";
+  if (zip.length !== 5) return "Enter exactly five digits for the ZIP code.";
+  return "";
 }

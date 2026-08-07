@@ -3,7 +3,36 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Rate Pressure Index</title>
+    <title>Rate Pressure Index | Data-Center Growth and Electric Bills</title>
+    <meta name="description" content="Explore sourced public filings and bill changes shaping data-center-related rate pressure for pilot electric utilities.">
+    <meta property="og:title" content="Rate Pressure Index | Data-Center Growth and Electric Bills">
+    <meta property="og:description" content="Explore sourced public filings and bill changes shaping data-center-related rate pressure for pilot electric utilities.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://rate-pressure-index.vercel.app/">
+    <meta name="twitter:card" content="summary">
+    <link rel="canonical" href="https://rate-pressure-index.vercel.app/">
+    <script type="application/ld+json" id="rate-pressure-index-dataset">
+      {
+        "@context": "https://schema.org",
+        "@type": "Dataset",
+        "name": "Rate Pressure Index",
+        "description": "A public-data indicator that combines five cited factors to describe rate pressure associated with data-center-related grid buildout. It is not a causal determination.",
+        "url": "https://rate-pressure-index.vercel.app/",
+        "isAccessibleForFree": true,
+        "variableMeasured": [
+          "Grid constraint score",
+          "Tariff protection score",
+          "Buildout scale score",
+          "Rate case score",
+          "Rate trend score"
+        ],
+        "distribution": {
+          "@type": "DataDownload",
+          "contentUrl": "https://rate-pressure-index.vercel.app/data/utilities.json",
+          "encodingFormat": "application/json"
+        }
+      }
+    </script>
     <link rel="stylesheet" href="styles.css">
   </head>
   <body>
@@ -16,10 +45,10 @@
           </p>
           <div class="network-motif" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span></div>
         </div>
-        <form id="lookup-form" class="lookup-form">
+        <form id="lookup-form" class="lookup-form" novalidate>
           <label for="zip">ZIP code</label>
           <div class="input-row">
-            <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" maxlength="5" placeholder="20147" required>
+            <input id="zip" name="zip" inputmode="numeric" autocomplete="postal-code" pattern="[0-9]{5}" placeholder="20147" required>
             <button type="submit">Check</button>
           </div>
           <p id="form-error" class="form-error" role="alert"></p>
@@ -29,7 +58,7 @@
       </section>
 
       <section id="result" class="result-panel" hidden></section>
-      <section id="not-covered" class="result-panel muted-panel" hidden></section>
+      <section id="not-covered" class="result-panel muted-panel" aria-live="polite" hidden></section>
     </main>
 
     <script type="module" src="src/app.js"></script>
