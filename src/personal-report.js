@@ -28,8 +28,8 @@ export function renderPersonalReportIntake(utility) {
     <section class="personal-report-panel" aria-labelledby="personal-report-title">
       <div>
         <div class="section-kicker">Personalized deep dive</div>
-        <h3 id="personal-report-title">Build a household bill-impact report</h3>
-        <p>Use your monthly usage when you have it, or answer two quick questions for a rough usage estimate. The report keeps the cited utility inputs visible.</p>
+        <h3 id="personal-report-title">See the impact at your usage</h3>
+        <p>Get a report scaled to your specific usage, not the utility-wide average. Use your monthly kWh or answer two quick questions.</p>
       </div>
       <form class="personal-report-form" data-personal-report-form data-utility-id="${utility.utility_id}">
         <fieldset>

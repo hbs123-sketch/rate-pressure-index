@@ -15,7 +15,6 @@ const zipInput = document.querySelector("#zip");
 const formError = document.querySelector("#form-error");
 const result = document.querySelector("#result");
 const notCovered = document.querySelector("#not-covered");
-const pilotPreview = document.querySelector("#pilot-preview");
 const submitButton = form.querySelector('button[type="submit"]');
 
 setLookupBusy(true);
@@ -48,7 +47,6 @@ async function loadIndexData() {
     utilitiesById = new Map(utilities.map((utility) => [utility.utility_id, utility]));
     dataReady = true;
     setLookupBusy(false);
-    renderPilotPreview();
     const params = new URLSearchParams(location.search);
     if (params.has("zip")) {
       zipInput.value = params.get("zip");
@@ -57,17 +55,6 @@ async function loadIndexData() {
   } catch {
     showDataLoadFailure();
   }
-}
-
-function renderPilotPreview() {
-  if (!pilotPreview) return;
-  pilotPreview.innerHTML = utilities.map((utility) => `
-    <article class="pilot-card">
-      <span>${utility.utility_name}</span>
-      <strong>${utility.composite_score}</strong>
-      <em class="band ${utility.band.toLowerCase()}">${utility.band}</em>
-    </article>
-  `).join("");
 }
 
 async function handleLookup(rawZip) {
@@ -157,21 +144,29 @@ function showResult(zip, utility) {
 function renderNarrativeHero(utility, zip, score, band) {
   const loadStat = findStatistic(utility, [/data centers?/i, /contracted load/i, /new contracts/i]);
   const billStat = findStatistic(utility, [/bill increase/i, /net bill change/i, /customer benefit/i]);
+  const scaling = utility.usage_scaling;
   const story = loadStat && billStat
-    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>, and the cited <a href="${billStat.source_url}" target="_blank" rel="noreferrer">${billStat.label.toLowerCase()} is ${billStat.value}</a>${billStat.timeframe ? ` <span class="timeframe-tag">${billStat.timeframe}</span>` : ""}.`
+    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>, while its cited household change is <a href="${billStat.source_url}" target="_blank" rel="noreferrer">${billStat.value}</a>.`
     : `${utility.utility_name}'s public-data inputs are summarized below.`;
   return `
     <section class="narrative-hero">
-      <div>
+      <div class="narrative-primary">
         <p class="eyebrow">ZIP ${zip}</p>
         <h2 class="utility-name">${utility.utility_name}</h2>
         <p class="state-line">${utility.state} - ${utility.rto_iso}</p>
+        ${scaling ? `
+          <div class="hero-impact">
+            <span>Estimated household ${scaling.base_monthly_dollars < 0 ? "benefit" : "impact"}</span>
+            <strong>${formatMonthlyImpact(scaling.base_monthly_dollars).replace("Estimated impact: ", "").replace("Estimated benefit: ", "")}</strong>
+            <em class="timeframe-tag">${scaling.timeframe}</em>
+          </div>
+        ` : ""}
         <p class="narrative-copy">${story}</p>
         ${renderWhatsChanged(utility)}
       </div>
       <div class="score-box">
-        <span class="score-label">Rate Pressure Score</span>
-        <div class="score">${score}</div>
+        <span class="score-label">Evidence index</span>
+        <div class="score">${score}<span>/100</span></div>
         <span class="band ${band.toLowerCase()}">${band}</span>
         <p class="score-meaning">${scoreMeaning(band)}</p>
         ${renderShareButton(utility)}
@@ -354,8 +349,8 @@ function renderUsageEstimator(utility) {
     <section class="usage-panel" aria-label="Bill impact estimate">
       <div>
         <div class="section-kicker">Bill impact estimate</div>
-        <h3>Choose the usage level that is closest to your household.</h3>
-        <p>This rough estimate scales the cited rate action or customer benefit for the selected usage tier; it is not a precise bill forecast or cause determination.</p>
+        <h3>Choose the usage level closest to your household.</h3>
+        <p>Based on the cited rate action for this tier. It is an estimate, not a bill forecast.</p>
       </div>
       <div class="usage-controls" role="group" aria-label="Usage level">
         ${options.map(([value, multiplier, label], index) => `
@@ -380,7 +375,8 @@ function renderWhatsChanged(utility) {
   if (!utility.whats_changed) return "";
   return `
     <p class="change-line">
-      <strong>What's changed (${utility.whats_changed.date}):</strong>
+      <span class="updated">Updated ${utility.last_updated}</span><span aria-hidden="true"> | </span>
+      <strong>Changed ${utility.whats_changed.date}:</strong>
       ${utility.whats_changed.text}
       <a href="${utility.whats_changed.source_url}" target="_blank" rel="noreferrer">Source</a>
     </p>
