@@ -35,7 +35,7 @@ for (const [zip, utility, score, band] of [
 ]) {
   await page.goto(new URL(`/?zip=${zip}`, baseUrl).href, { waitUntil: "networkidle" });
   assert.equal(await page.title(), `${utility}: ${score} ${band} | Rate Pressure Index`, `${utility} result title`);
-  assert.ok((await page.locator('meta[name="description"]').getAttribute("content")).includes("five cited public-data factors"), `${utility} result description`);
+  assert.ok((await page.locator('meta[name="description"]').getAttribute("content")).includes("five sourced public-data factors"), `${utility} result description`);
   assert.equal(await page.locator('link[rel="canonical"]').getAttribute("href"), new URL(`?zip=${zip}`, baseUrl).href, `${utility} canonical URL`);
   const schema = JSON.parse(await page.locator("#rate-pressure-index-result").textContent());
   assert.equal(schema["@type"], "Dataset", `${utility} Dataset schema`);

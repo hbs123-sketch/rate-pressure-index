@@ -39,7 +39,7 @@ function renderReport(report) {
       <strong>${formatPersonalImpact(report.monthlyImpact)}</strong>
       <em class="timeframe-tag">${report.timeframe}</em>
       <p>${report.calculationNote}</p>
-      <a href="${report.sourceUrl}" target="_blank" rel="noreferrer">Source for cited bill input</a>
+      <a href="${report.sourceUrl}" target="_blank" rel="noreferrer">Source for bill input</a>
     </section>
     <section class="report-intake-summary" aria-label="Your inputs">
       <h2>Your inputs</h2>
@@ -51,7 +51,7 @@ function renderReport(report) {
       ${report.selectedSupplyNote ? `<p>${report.selectedSupplyNote}</p>` : ""}
     </section>
     <section class="report-drivers" aria-label="What is driving this report">
-      <div class="factor-heading"><div><h2>What is driving this report</h2><p>These are the same cited inputs used in the free score.</p></div></div>
+      <div class="factor-heading"><div><h2>What is driving this report</h2><p>These are the same sourced inputs used in the free score.</p></div></div>
       <div class="report-driver-list">
         ${report.drivers.map((driver) => `
           <article>

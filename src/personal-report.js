@@ -1,7 +1,7 @@
 const RATE_CLASS_INTAKE = {
   "14006": {
     label: "Electric supply arrangement",
-    help: "AEP Ohio's cited bill-change example applies to a 1,000 kWh Standard Service Offer customer.",
+    help: "AEP Ohio's published bill-change example applies to a 1,000 kWh Standard Service Offer customer.",
     options: [
       ["sso", "Standard Service Offer"],
       ["supplier", "Competitive supplier"],
@@ -96,9 +96,9 @@ export function buildPersonalReport(utility, intake) {
     ? scaling.base_monthly_dollars * intake.usageKwh / referenceUsageKwh
     : scaling.base_monthly_dollars;
   const selectedSupplyNote = intake.rateClass === "supplier"
-    ? "You selected a competitive supplier. The cited AEP example is for Standard Service Offer supply, so use this as a benchmark rather than a bill forecast."
+    ? "You selected a competitive supplier. The published AEP example is for Standard Service Offer supply, so use this as a benchmark rather than a bill forecast."
     : intake.rateClass === "unknown"
-      ? "The cited AEP example is for Standard Service Offer supply. Check your bill before treating this as a bill forecast."
+      ? "The published AEP example is for Standard Service Offer supply. Check your bill before treating this as a bill forecast."
       : "";
 
   return {
@@ -113,8 +113,8 @@ export function buildPersonalReport(utility, intake) {
     sourceUrl: scaling.source_url,
     sourceLabel: scaling.base_label,
     calculationNote: canScale
-      ? `Scaled from the cited ${scaling.base_label} reference of ${referenceUsageKwh.toLocaleString()} kWh using your ${intake.usageKwh.toLocaleString()} kWh monthly usage. This is a proportional estimate from a single cited usage case, not an independently sourced rate for your specific usage level. Actual bills may not scale perfectly linearly with usage because of tiered rates, fixed charges, and other factors.`
-      : `The cited input is an average residential bill change, not a per-kWh rate. This report keeps the sourced average instead of inventing a usage-specific rate. Your stated usage is ${intake.usageKwh.toLocaleString()} kWh per month.`,
+      ? `Scaled from the published ${scaling.base_label} reference of ${referenceUsageKwh.toLocaleString()} kWh using your ${intake.usageKwh.toLocaleString()} kWh monthly usage. This is a proportional estimate from one published usage case, not a rate published for your specific usage level. Actual bills may not scale perfectly linearly with usage because of tiered rates, fixed charges, and other factors.`
+      : `The published input is an average residential bill change, not a per-kWh rate. This report keeps the sourced average instead of inventing a usage-specific rate. Your stated usage is ${intake.usageKwh.toLocaleString()} kWh per month.`,
     selectedSupplyNote,
     drivers: [
       factorDriver(utility, "grid_constraint_score"),

@@ -76,7 +76,7 @@ python -m pip install -r requirements-dev.txt
 
 ## Project Layout
 
-- `data/utilities.json`: scored utility records, cited claims, and display figures.
+- `data/utilities.json`: scored utility records, source-linked claims, and display figures.
 - `data/zip-to-utility.json`: intentionally limited pilot ZIP coverage.
 - `src/`: browser-side lookup, scoring, reporting, and display modules.
 - `api/recommendation-click.js`: privacy-minimal recommendation-click event endpoint.
