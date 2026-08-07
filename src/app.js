@@ -15,6 +15,7 @@ const zipInput = document.querySelector("#zip");
 const formError = document.querySelector("#form-error");
 const result = document.querySelector("#result");
 const notCovered = document.querySelector("#not-covered");
+const infrastructureFlow = document.querySelector("#infrastructure-flow");
 const submitButton = form.querySelector('button[type="submit"]');
 
 setLookupBusy(true);
@@ -120,6 +121,7 @@ function showDataLoadFailure() {
   `;
   result.hidden = false;
   notCovered.hidden = true;
+  setInfrastructureFlowVisibility(true);
   formError.textContent = "The index data is unavailable right now. Refresh to try again.";
 }
 
@@ -139,6 +141,11 @@ function showResult(zip, utility) {
 
   result.hidden = false;
   notCovered.hidden = true;
+  setInfrastructureFlowVisibility(true);
+}
+
+function setInfrastructureFlowVisibility(hidden) {
+  if (infrastructureFlow) infrastructureFlow.hidden = hidden;
 }
 
 function renderNarrativeHero(utility, zip, score, band) {
@@ -147,7 +154,7 @@ function renderNarrativeHero(utility, zip, score, band) {
   const scaling = utility.usage_scaling;
   const displayContext = scaling?.display_context;
   const story = loadStat && billStat
-    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>. The household figure below is based on <a href="${billStat.source_url}" target="_blank" rel="noreferrer">its published rate information</a>.`
+    ? `${utility.utility_name} reports <a href="${loadStat.source_url}" target="_blank" rel="noreferrer">${loadStat.value} ${loadStat.label.toLowerCase()}</a>.`
     : `${utility.utility_name}'s public-data inputs are summarized below.`;
   return `
     <section class="narrative-hero">
@@ -160,6 +167,7 @@ function renderNarrativeHero(utility, zip, score, band) {
             <span>${displayContext?.label || `Estimated household ${scaling.base_monthly_dollars < 0 ? "benefit" : "impact"}`}</span>
             <strong>${formatMonthlyImpact(scaling.base_monthly_dollars).replace("Estimated impact: ", "").replace("Estimated benefit: ", "")}</strong>
             ${displayContext ? `<p class="hero-timing">${displayContext.text} ${displayContext.sources.map((source) => `<a href="${source.url}" target="_blank" rel="noreferrer">${source.label}</a>`).join(" ")}</p>` : ""}
+            ${displayContext?.score_context ? `<p class="score-context">${displayContext.score_context}</p>` : ""}
           </div>
         ` : ""}
         <p class="narrative-copy">${story}</p>
@@ -623,6 +631,7 @@ function showNotCovered(zip) {
 
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 
   notCovered.querySelector("#waitlist-form").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -643,6 +652,7 @@ function showInvalidZip(zip) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }
 
 function showAmbiguousCoverage(zip, matchedUtilities) {
@@ -655,6 +665,7 @@ function showAmbiguousCoverage(zip, matchedUtilities) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }
 
 function showZipVerificationUnavailable(zip) {
@@ -665,4 +676,5 @@ function showZipVerificationUnavailable(zip) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }
