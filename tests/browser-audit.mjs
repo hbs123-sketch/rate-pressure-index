@@ -67,6 +67,7 @@ for (const testCase of cases) {
   let body = await page.locator("body").innerText();
 
   assert.ok(body.includes(utility.utility_name), `${utility.utility_name} renders utility name`);
+  assert.equal(await page.locator("#infrastructure-flow").isHidden(), true, `${utility.utility_name} hides the landing infrastructure flow`);
   assert.ok(body.includes(String(utility.composite_score)), `${utility.utility_name} renders score`);
   assert.ok(body.includes(utility.band), `${utility.utility_name} renders band`);
   assert.equal(await page.locator(".score-meaning").count(), 0, `${utility.utility_name} removes redundant score explanation`);
@@ -193,6 +194,7 @@ for (const testCase of cases) {
 
 await page.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
 assert.equal(await page.locator(".coverage-line").count(), 1, "landing page renders the pilot-coverage statement");
+assert.equal(await page.locator("#infrastructure-flow .flow-step").count(), 4, "landing page renders four infrastructure-flow steps");
 assert.ok((await page.locator("h1").innerText()).length < 40, "landing page uses a concise headline");
 assert.equal((await page.locator("body").innerText()).includes("Pilot lookup"), false, "landing page removes pilot lookup label");
 assert.equal((await page.locator("body").innerText()).includes("Every number sourced and linked. Not affiliated with any utility."), false, "landing page removes trust statement from hero");
@@ -245,6 +247,12 @@ for (const testCase of cases) {
   await mobileEvidenceSummary.click();
   await mobilePage.screenshot({ path: `${screenshotDir}/${screenshotPrefix}-mobile-${testCase.zip}.png`, fullPage: true });
 }
+
+await mobilePage.goto(`${baseUrl}/index.html`, { waitUntil: "networkidle" });
+assert.equal(await mobilePage.locator("#infrastructure-flow .flow-step").count(), 4, "mobile landing renders four infrastructure-flow steps");
+const mobileFlowColumns = await mobilePage.locator(".flow-steps").evaluate((element) => getComputedStyle(element).gridTemplateColumns);
+assert.equal(mobileFlowColumns.split(" ").length, 1, "mobile infrastructure flow stacks into one column");
+assert.equal(await mobilePage.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth), true, "mobile infrastructure flow does not overflow horizontally");
 
 await browser.close();
 

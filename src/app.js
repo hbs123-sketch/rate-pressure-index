@@ -15,6 +15,7 @@ const zipInput = document.querySelector("#zip");
 const formError = document.querySelector("#form-error");
 const result = document.querySelector("#result");
 const notCovered = document.querySelector("#not-covered");
+const infrastructureFlow = document.querySelector("#infrastructure-flow");
 const submitButton = form.querySelector('button[type="submit"]');
 
 setLookupBusy(true);
@@ -120,6 +121,7 @@ function showDataLoadFailure() {
   `;
   result.hidden = false;
   notCovered.hidden = true;
+  setInfrastructureFlowVisibility(true);
   formError.textContent = "The index data is unavailable right now. Refresh to try again.";
 }
 
@@ -139,6 +141,11 @@ function showResult(zip, utility) {
 
   result.hidden = false;
   notCovered.hidden = true;
+  setInfrastructureFlowVisibility(true);
+}
+
+function setInfrastructureFlowVisibility(hidden) {
+  if (infrastructureFlow) infrastructureFlow.hidden = hidden;
 }
 
 function renderNarrativeHero(utility, zip, score, band) {
@@ -623,6 +630,7 @@ function showNotCovered(zip) {
 
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 
   notCovered.querySelector("#waitlist-form").addEventListener("submit", (event) => {
     event.preventDefault();
@@ -643,6 +651,7 @@ function showInvalidZip(zip) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }
 
 function showAmbiguousCoverage(zip, matchedUtilities) {
@@ -655,6 +664,7 @@ function showAmbiguousCoverage(zip, matchedUtilities) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }
 
 function showZipVerificationUnavailable(zip) {
@@ -665,4 +675,5 @@ function showZipVerificationUnavailable(zip) {
   `;
   result.hidden = true;
   notCovered.hidden = false;
+  setInfrastructureFlowVisibility(true);
 }

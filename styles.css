@@ -242,6 +242,92 @@ summary:focus-visible {
   font-weight: 700;
 }
 
+.infrastructure-flow {
+  margin-top: 18px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 26px 28px 28px;
+  background: var(--panel);
+  box-shadow: 0 10px 28px rgba(58, 42, 31, 0.05);
+}
+
+.flow-heading {
+  max-width: 620px;
+}
+
+.flow-heading h2 {
+  margin-bottom: 22px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.7rem, 3vw, 2.4rem);
+  line-height: 1.05;
+}
+
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flow-step {
+  position: relative;
+  min-height: 210px;
+  border-top: 2px solid var(--accent);
+  padding: 16px 12px 0 0;
+}
+
+.flow-step:not(:last-child)::after {
+  position: absolute;
+  top: 28px;
+  right: -8px;
+  width: 1px;
+  height: 32px;
+  background: var(--line);
+  content: "";
+}
+
+.flow-icon {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  border: 1px solid #ddb9aa;
+  background: #fffaf6;
+  color: var(--accent-strong);
+}
+
+.flow-icon svg {
+  width: 23px;
+  height: 23px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.5;
+}
+
+.flow-number {
+  display: block;
+  margin-top: 20px;
+  color: var(--accent-strong);
+  font-size: 0.74rem;
+  font-weight: 850;
+}
+
+.flow-step h3 {
+  margin: 6px 0 8px;
+  font-size: 0.98rem;
+}
+
+.flow-step p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+  line-height: 1.48;
+}
+
 .result-panel {
   margin-top: 18px;
 }
@@ -1256,6 +1342,7 @@ summary:focus-visible {
 
 @media (max-width: 860px) {
   .lookup-panel,
+  .flow-steps,
   .narrative-hero,
   .numbers-grid,
   .comparison-panel,
@@ -1287,6 +1374,30 @@ summary:focus-visible {
 
   .usage-result {
     justify-items: start;
+  }
+
+  .flow-step {
+    min-height: 0;
+    padding: 14px 0 18px 54px;
+  }
+
+  .flow-step:not(:last-child)::after {
+    top: auto;
+    right: auto;
+    bottom: -1px;
+    left: 18px;
+    width: 1px;
+    height: 20px;
+  }
+
+  .flow-icon {
+    position: absolute;
+    top: 14px;
+    left: 0;
+  }
+
+  .flow-number {
+    margin-top: 0;
   }
 
   .usage-timing {
@@ -1364,6 +1475,7 @@ summary:focus-visible {
   }
 
   .lookup-panel,
+  .infrastructure-flow,
   .result-panel {
     padding: 18px;
   }
