@@ -14,7 +14,7 @@
     "test:security": "node tests/security-audit.mjs"
   },
   "devDependencies": {
-    "axe-core": "^4.10.2",
+    "axe-core": "^4.12.1",
     "playwright": "^1.62.0"
   }
 }
