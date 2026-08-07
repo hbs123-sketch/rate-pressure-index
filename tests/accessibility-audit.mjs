@@ -20,7 +20,8 @@ const pages = [
 ];
 
 const browser = await chromium.launch({ headless: true });
-const page = await browser.newPage({ viewport: { width: 1366, height: 1000 } });
+const context = await browser.newContext({ viewport: { width: 1366, height: 1000 }, bypassCSP: true });
+const page = await context.newPage();
 const allViolations = [];
 
 for (const [label, path] of pages) {
